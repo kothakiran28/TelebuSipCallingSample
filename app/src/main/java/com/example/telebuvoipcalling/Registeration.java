@@ -68,10 +68,10 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
 
         // Screen on off can cause problems on pushto talk
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
+        intializeManager();
         if (isPermissionGranted())
         {
-            intializeManager();
+
         }
 
 
@@ -85,7 +85,7 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
         super.onStart();
         // When we get back from the preference setting Activity, assume
         // settings have changed, and re-re
-        intializeManager();
+        //intializeManager();
 
     }
     @Override
@@ -140,6 +140,7 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
             String domain = prefs.getString("domainPref", "");
             String password = prefs.getString("passPref", "");
             // These is Keys mentioned in the xml file in Preference Activity
+            Log.e("SipProfile",username+","+domain+","+password);
 
             if (username.length() == 0 || domain.length() == 0 || password.length() == 0) {
                 // You entered nothing
@@ -150,8 +151,11 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
             // Received the  New Profile Details :
             try
             {
-                SipProfile.Builder builder = new SipProfile.Builder(username,domain);
-                builder.setPassword(password);
+                SipProfile.Builder builder = new SipProfile.Builder("gopisrits3","sip.linphone.org");
+                builder.setPassword("gopi.511");
+                builder.setProtocol("UDP");
+                builder.setOutboundProxy("sip.linphone.org");
+                builder.setSendKeepAlive(true);
                 me = builder.build();
                 // After Building Profile Send Intent to Incoming Calls
                 Intent i =new Intent();
@@ -160,7 +164,50 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                 //  fillIn(Intent, int) to allow the current data or type value overwritten, even if it is already set.
                 PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, Intent.FILL_IN_DATA);
                 // Completed PendingIntent send
-                manager.open(me,pi,null);
+                manager.open(me, pi, new SipRegistrationListener() {
+                    @Override
+                    public void onRegistering(String s) {
+                        Log.e("onRegistering","onRegistering....");
+                        updateStatus("Registering with SIP Server....");
+                    }
+
+                    @Override
+                    public void onRegistrationDone(String s, long l) {
+                        Log.e("onRegistering","onRegistrationDone....");
+                        updateStatus("Ready");
+                    }
+
+                    @Override
+                    public void onRegistrationFailed(String s, int i, String errorMessage) {
+                        updateStatus("Registeration Failed Please Check settings");
+                        Log.e("onRegistering","onRegistrationFailed....");
+                        Log.e("errormessage",errorMessage+"********");
+                        Log.e("errorcode",i+"");
+                        Log.e("localProfileUri",s+"");
+                    }
+                });
+              /*  manager.register(me, 50000, new SipRegistrationListener() {
+                    @Override
+                    public void onRegistering(String s) {
+                        Log.e("onRegistering","onRegistering....");
+                        updateStatus("Registering with SIP Server....");
+                    }
+
+                    @Override
+                    public void onRegistrationDone(String s, long l) {
+                        Log.e("onRegistering","onRegistrationDone....");
+                        updateStatus("Ready");
+                    }
+
+                    @Override
+                    public void onRegistrationFailed(String s, int i, String errorMessage) {
+                        updateStatus("Registeration Failed Please Check settings");
+                        Log.e("onRegistering","onRegistrationFailed....");
+                        Log.e("errormessage",errorMessage+"********");
+                        Log.e("errorcode",i+"");
+                        Log.e("localProfileUri",s+"");
+                    }
+                });*/
                 // me = Local pROFILE
                 // pi =  pending Intent
                 // null =SIPRegisterationListener
@@ -181,10 +228,10 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                     }
 
                     @Override
-                    public void onRegistrationFailed(String s, int i, String s1) {
+                    public void onRegistrationFailed(String s, int i, String errorMessage) {
                         updateStatus("Registeration Failed Please Check settings");
                         Log.e("onRegistering","onRegistrationFailed....");
-                        Log.e("errormessage",s1+"");
+                        Log.e("errormessage",errorMessage+"********");
                         Log.e("errorcode",i+"");
                         Log.e("localProfileUri",s+"");
                     }
@@ -192,10 +239,12 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
 
             }catch (ParseException pe)
             {
+                pe.printStackTrace();
                 updateStatus("Connection Error ParseException Error");
             }
             catch(SipException se)
             {
+                se.printStackTrace();
                 updateStatus("Conection error SipException error");
             }
 
