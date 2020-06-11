@@ -14,6 +14,7 @@ import android.net.sip.SipException;
 import android.net.sip.SipManager;
 import android.net.sip.SipProfile;
 import android.net.sip.SipRegistrationListener;
+import android.net.sip.SipSession;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -29,10 +30,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.text.ParseException;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
-import java.text.ParseException;
 
 public class Registeration extends AppCompatActivity implements View.OnTouchListener
 {
@@ -151,11 +152,15 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
             // Received the  New Profile Details :
             try
             {
-                SipProfile.Builder builder = new SipProfile.Builder("gopisrits3","sip.linphone.org");
-                builder.setPassword("gopi.511");
+                //183.82.2.22
+                //202.65.140.55
+                SipProfile.Builder builder = new SipProfile.Builder("1003","202.65.140.55:5070");
+                builder.setPassword("1234abcd");
                 builder.setProtocol("UDP");
-                builder.setOutboundProxy("sip.linphone.org");
+                builder.setPort(5070);
+                builder.setOutboundProxy("202.65.140.55:5070");
                 builder.setSendKeepAlive(true);
+                builder.setAutoRegistration(true);
                 me = builder.build();
                 // After Building Profile Send Intent to Incoming Calls
                 Intent i =new Intent();
@@ -164,7 +169,8 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                 //  fillIn(Intent, int) to allow the current data or type value overwritten, even if it is already set.
                 PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, Intent.FILL_IN_DATA);
                 // Completed PendingIntent send
-                manager.open(me, pi, new SipRegistrationListener() {
+                manager.open(me, pi,null);
+                manager.register(me, 5*60*1000, new SipRegistrationListener() {
                     @Override
                     public void onRegistering(String s) {
                         Log.e("onRegistering","onRegistering....");
@@ -186,7 +192,13 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                         Log.e("localProfileUri",s+"");
                     }
                 });
-              /*  manager.register(me, 50000, new SipRegistrationListener() {
+                // me = Local pROFILE
+                // pi =  pending Intent
+                // null =SIPRegisterationListener
+                // Setting Registeration Listerner
+                    // getURIString from me Profile
+                Log.e("uristring",me.getUriString()+"");
+              /*  manager.setRegistrationListener(me.getUriString(), new SipRegistrationListener() {
                     @Override
                     public void onRegistering(String s) {
                         Log.e("onRegistering","onRegistering....");
@@ -208,35 +220,6 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                         Log.e("localProfileUri",s+"");
                     }
                 });*/
-                // me = Local pROFILE
-                // pi =  pending Intent
-                // null =SIPRegisterationListener
-                // Setting Registeration Listerner
-                    // getURIString from me Profile
-                Log.e("uristring",me.getUriString()+"");
-                manager.setRegistrationListener(me.getUriString(), new SipRegistrationListener() {
-                    @Override
-                    public void onRegistering(String s) {
-                        Log.e("onRegistering","onRegistering....");
-                        updateStatus("Registering with SIP Server....");
-                    }
-
-                    @Override
-                    public void onRegistrationDone(String s, long l) {
-                        Log.e("onRegistering","onRegistrationDone....");
-                        updateStatus("Ready");
-                    }
-
-                    @Override
-                    public void onRegistrationFailed(String s, int i, String errorMessage) {
-                        updateStatus("Registeration Failed Please Check settings");
-                        Log.e("onRegistering","onRegistrationFailed....");
-                        Log.e("errormessage",errorMessage+"********");
-                        Log.e("errorcode",i+"");
-                        Log.e("localProfileUri",s+"");
-                    }
-                });
-
             }catch (ParseException pe)
             {
                 pe.printStackTrace();
@@ -274,6 +257,7 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                 if (me != null) {
                     // Manger not null and profile also not null
                     manager.close(me.getUriString());
+                    Log.e("Walkie/onDestroy", me.getUriString());
                 }
             } catch (Exception ee) {
                 Toast.makeText(getApplicationContext(),"Failed to close Local Profile", Toast.LENGTH_SHORT).show();
@@ -294,8 +278,8 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                 public void onCallEstablished(SipAudioCall call) {
                     call.startAudio();
                     call.setSpeakerMode(true);
-                    call.toggleMute();
-                    updateStatus(call);
+                    //call.toggleMute();
+                    updateStatus("onCallEstablished");
                 }
 
                 @Override
@@ -460,7 +444,7 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                     Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_SHORT).show();
                     intializeManager();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
