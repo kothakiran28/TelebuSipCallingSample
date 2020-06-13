@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2F4B68"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".IncomingCallActivity"
+    tools:showIn="@layout/activity_incoming_call">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="50dp"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:id="@+id/txtcallername"
+            android:gravity="center"
+            android:text="kiran"
+            android:textSize="22dp"
+            android:textColor="#ffffff"
+            android:layout_marginBottom="5dp"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/txtcallno"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:textSize="12dp"
+            android:textColor="#ffffff"
+            android:layout_marginBottom="20dp"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Incoming call"
+            android:textSize="14dp"
+            android:id="@+id/txtStatus"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/lytincoming"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="50dp"
+        android:weightSum="1"
+        android:layout_alignParentBottom="true">
+        <ImageView
+            android:id="@+id/imgreject"
+            android:layout_width="60dp"
+            android:layout_weight=".5"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_hangup"/>
+
+        <ImageView
+            android:id="@+id/imgaccept"
+            android:layout_width="60dp"
+            android:layout_weight=".5"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_call_accept"/>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:id="@+id/imghangup"
+            android:visibility="gone"
+            android:src="@drawable/ic_hangup"
+            android:layout_height="60dp" />
+    </LinearLayout>
+
+
+
+</RelativeLayout>

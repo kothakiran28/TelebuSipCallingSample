@@ -38,10 +38,10 @@ import androidx.core.app.ActivityCompat;
 public class Registeration extends AppCompatActivity implements View.OnTouchListener
 {
     public String sipAddress = null;
-    public SipManager manager = null;
+    public static SipManager manager = null;
     // SipManager,SipProfile,SipAudioCall  is default Class in android belonging to
     // android .net.sip package
-    public SipProfile me = null;
+    public static SipProfile me = null;
     public SipAudioCall call = null;
     public IncomingCallReceiver receiver;
 
@@ -50,11 +50,13 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
     private static  final int SET_AUTH_INFO =2;
     private static  final int UPDATE_SETTING_DIALOG =3;
     private static  final int HANG_UP =4;
+    public static Registeration registeration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.walkie);
+        registeration = this;
         ToggleButton but = (ToggleButton)findViewById(R.id.pushToTalk);
         but.setOnTouchListener(this); // Listenes on Touch
         // Intent Filter is used to fire the IncomingCallReceiver
@@ -154,13 +156,14 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
             {
                 //183.82.2.22
                 //202.65.140.55
-                SipProfile.Builder builder = new SipProfile.Builder("1003","202.65.140.55:5070");
-                builder.setPassword("1234abcd");
+                SipProfile.Builder builder = new SipProfile.Builder(username,domain);
+                builder.setPassword(password);
                 builder.setProtocol("UDP");
+
                 builder.setPort(5070);
-                builder.setOutboundProxy("202.65.140.55:5070");
+                builder.setOutboundProxy(domain);
                 builder.setSendKeepAlive(true);
-                builder.setAutoRegistration(true);
+               builder.setAutoRegistration(true);
                 me = builder.build();
                 // After Building Profile Send Intent to Incoming Calls
                 Intent i =new Intent();
@@ -268,45 +271,11 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
     public void intiateCall()
     {
         //Make an outgoing call
-        updateStatus(sipAddress);
-        try {
-            SipAudioCall.Listener listener = new SipAudioCall.Listener() {
-                // Much of the client's interaction with the SIP Stack will
-                // happen via listeners.  Even making an outgoing call, don't
-                // forget to set up a listener to set things up once the call is established.
-                @Override
-                public void onCallEstablished(SipAudioCall call) {
-                    call.startAudio();
-                    call.setSpeakerMode(true);
-                    //call.toggleMute();
-                    updateStatus("onCallEstablished");
-                }
+        //updateStatus(sipAddress);
+        Intent intent =new Intent(Registeration.this,DialingActivity.class);
+        intent.putExtra("sipAddress",sipAddress);
+        startActivity(intent);
 
-                @Override
-                public void onCallEnded(SipAudioCall call) {
-                    updateStatus("Ready. on Call Ended");
-                }
-            };
-
-            call = manager.makeAudioCall(me.getUriString(), sipAddress, listener, 30);
-
-        }
-        catch (Exception e) {
-            Toast.makeText(getApplicationContext(),"Error when trying to close manager", Toast.LENGTH_SHORT).show();
-            Log.i("Walkie/InitiateCall", "Error when trying to close manager.", e);
-            if (me != null) {
-                try {
-                    manager.close(me.getUriString());
-                } catch (Exception ee) {
-                    Log.i("Walkie/InitiateCall",
-                            "Error when trying to close manager.", ee);
-                    ee.printStackTrace();
-                }
-            }
-            if (call != null) {
-                call.close();
-            }
-        }
     }
     public void updateStatus(SipAudioCall inComingCall) {
         String useName = call.getPeerProfile().getDisplayName();
@@ -314,7 +283,7 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
         {
             useName = call.getPeerProfile().getUserName();
         }
-        updateStatus(useName + "@" + call.getPeerProfile().getSipDomain());
+        //updateStatus(useName + "@" + call.getPeerProfile().getSipDomain());
 
     }
 
