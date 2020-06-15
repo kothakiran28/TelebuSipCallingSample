@@ -14,7 +14,6 @@ import android.net.sip.SipException;
 import android.net.sip.SipManager;
 import android.net.sip.SipProfile;
 import android.net.sip.SipRegistrationListener;
-import android.net.sip.SipSession;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -25,18 +24,21 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import java.text.ParseException;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-public class Registeration extends AppCompatActivity implements View.OnTouchListener
-{
+import static android.Manifest.permission.MODIFY_AUDIO_SETTINGS;
+import static android.Manifest.permission.RECORD_AUDIO;
+
+public class Registeration extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener {
     public String sipAddress = null;
     public static SipManager manager = null;
     // SipManager,SipProfile,SipAudioCall  is default Class in android belonging to
@@ -44,7 +46,6 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
     public static SipProfile me = null;
     public SipAudioCall call = null;
     public IncomingCallReceiver receiver;
-
     /// Integer Variables
     private static  final int CALL_ADDRESS = 1;
     private static  final int SET_AUTH_INFO =2;
@@ -52,32 +53,35 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
     private static  final int HANG_UP =4;
     public static Registeration registeration;
 
+    LinearLayout lytCall;
+    Button btnCall;
+    EditText edtMobileNumber;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.walkie);
         registeration = this;
-        ToggleButton but = (ToggleButton)findViewById(R.id.pushToTalk);
-        but.setOnTouchListener(this); // Listenes on Touch
-        // Intent Filter is used to fire the IncomingCallReceiver
-        // when someone tries to call on the sip address used by the application
-
         IntentFilter filter =new IntentFilter();
         filter.addAction("android.SipDemo.INCOMING_CALL");    ////  #### Important HERE
         // Add a new Intent action to match against
         receiver = new IncomingCallReceiver();
         this.registerReceiver(receiver,filter);
-
-
+        setView();
         // Screen on off can cause problems on pushto talk
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        intializeManager();
         if (isPermissionGranted())
         {
-
+            intializeManager();
         }
 
 
+    }
+
+    void setView(){
+        lytCall=findViewById(R.id.lytCall);
+        btnCall=findViewById(R.id.btnCall);
+        btnCall.setOnClickListener(this);
+        edtMobileNumber=findViewById(R.id.edtMobileNumber);
     }
 
 
@@ -172,8 +176,7 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                 //  fillIn(Intent, int) to allow the current data or type value overwritten, even if it is already set.
                 PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, Intent.FILL_IN_DATA);
                 // Completed PendingIntent send
-                manager.open(me, pi,null);
-                manager.register(me, 5*60*1000, new SipRegistrationListener() {
+                manager.open(me, pi,new SipRegistrationListener() {
                     @Override
                     public void onRegistering(String s) {
                         Log.e("onRegistering","onRegistering....");
@@ -195,6 +198,54 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                         Log.e("localProfileUri",s+"");
                     }
                 });
+                if(manager.isOpened(me.getUriString())){
+                    manager.register(me, 5*60*1000, new SipRegistrationListener() {
+                        @Override
+                        public void onRegistering(String s) {
+                            Log.e("onRegistering","onRegistering....");
+                            updateStatus("Registering with SIP Server....");
+                        }
+
+                        @Override
+                        public void onRegistrationDone(String s, long l) {
+                            Log.e("onRegistering","onRegistrationDone....");
+                            updateStatus("Ready");
+                        }
+
+                        @Override
+                        public void onRegistrationFailed(String s, int i, String errorMessage) {
+                            updateStatus("Registeration Failed Please Check settings");
+                            Log.e("onRegistering","onRegistrationFailed....");
+                            Log.e("errormessage",errorMessage+"********");
+                            Log.e("errorcode",i+"");
+                            Log.e("localProfileUri",s+"");
+                        }
+                    });
+                }else {
+                    manager.setRegistrationListener(me.getUriString(), new SipRegistrationListener() {
+                        @Override
+                        public void onRegistering(String s) {
+                            Log.e("onRegistering","onRegistering....");
+                            updateStatus("Registering with SIP Server....");
+                        }
+
+                        @Override
+                        public void onRegistrationDone(String s, long l) {
+                            Log.e("onRegistering","onRegistrationDone....");
+                            updateStatus("Ready");
+                        }
+
+                        @Override
+                        public void onRegistrationFailed(String s, int i, String errorMessage) {
+                            updateStatus("Registeration Failed Please Check settings");
+                            Log.e("onRegistering","onRegistrationFailed....");
+                            Log.e("errormessage",errorMessage+"********");
+                            Log.e("errorcode",i+"");
+                            Log.e("localProfileUri",s+"");
+                        }
+                    });
+                }
+
                 // me = Local pROFILE
                 // pi =  pending Intent
                 // null =SIPRegisterationListener
@@ -242,6 +293,10 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
                 public void run() {
                     TextView labelView = (TextView) findViewById(R.id.walkie);
                     labelView.setText(status);
+                    if(status.equalsIgnoreCase("ready")){
+                        lytCall.setVisibility(View.VISIBLE);
+                    }
+
                 }
             });
 
@@ -273,7 +328,7 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
         //Make an outgoing call
         //updateStatus(sipAddress);
         Intent intent =new Intent(Registeration.this,DialingActivity.class);
-        intent.putExtra("sipAddress",sipAddress);
+        intent.putExtra("sipAddress","sip:"+sipAddress+"@202.65.140.55:5070");
         startActivity(intent);
 
     }
@@ -382,7 +437,7 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
     }
 
     public  boolean isPermissionGranted() {
-        if (Build.VERSION.SDK_INT >= 23) {
+       /* if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.MODIFY_PHONE_STATE)
                     == PackageManager.PERMISSION_GRANTED) {
                 Log.v("TAG","Permission is granted");
@@ -390,12 +445,33 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
             } else {
 
                 Log.v("TAG","Permission is revoked");
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.MODIFY_PHONE_STATE}, 1);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.MODIFY_PHONE_STATE,}, 1);
                 return false;
             }
         }
         else { //permission is automatically granted on sdk<23 upon installation
             Log.v("TAG","Permission is granted");
+            return true;
+        }*/
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+                    == PackageManager.PERMISSION_GRANTED&&
+                    checkSelfPermission(Manifest.permission.USE_SIP)
+                            == PackageManager.PERMISSION_GRANTED&&
+                    checkSelfPermission(Manifest.permission.RECORD_AUDIO)
+                            == PackageManager.PERMISSION_GRANTED&&
+                    checkSelfPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS)
+                            == PackageManager.PERMISSION_GRANTED) {
+                Log.v("TAG","Permission is granted");
+                return true;
+            } else {
+
+                Log.v("TAG","Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.USE_SIP,RECORD_AUDIO,MODIFY_AUDIO_SETTINGS}, 1);
+                return false;
+            }
+        }else {
             return true;
         }
     }
@@ -408,13 +484,31 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
 
             case 1: {
 
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_SHORT).show();
-                    intializeManager();
-                } else {
-                    //Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+                            == PackageManager.PERMISSION_GRANTED&&
+                            checkSelfPermission(Manifest.permission.USE_SIP)
+                                    == PackageManager.PERMISSION_GRANTED&&
+                            checkSelfPermission(RECORD_AUDIO)
+                                    == PackageManager.PERMISSION_GRANTED&&
+                            checkSelfPermission(MODIFY_AUDIO_SETTINGS)
+                                    == PackageManager.PERMISSION_GRANTED) {
+                        Log.v("TAG","Permission is granted");
+                        intializeManager();
+                    }else {
+                        Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
                 }
+
+                /*if (grantResults.length > 4
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED&& grantResults[1] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[2] == PackageManager.PERMISSION_GRANTED&& grantResults[3] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_SHORT).show();
+
+                } else {
+
+                }*/
                 return;
             }
 
@@ -427,6 +521,20 @@ public class Registeration extends AppCompatActivity implements View.OnTouchList
         Intent settingsActivity = new Intent(getBaseContext(),
                 SipSettings.class);
         startActivity(settingsActivity);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btnCall:
+                if(edtMobileNumber.getText().toString().trim().length()==0){
+                    edtMobileNumber.setError("Please select mobile number");
+                }else {
+                    sipAddress = edtMobileNumber.getText().toString().trim();
+                    intiateCall();
+                }
+                break;
+        }
     }
 }
 

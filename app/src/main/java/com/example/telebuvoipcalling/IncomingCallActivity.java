@@ -32,7 +32,6 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
     SipAudioCall.Listener listener;
     Intent intent;
     Registeration wt;
-    public SipManager manager = null;
     Handler ringingHandler;
     Runnable ringingRunnable;
     LinearLayout lytincoming;
@@ -48,10 +47,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             setContentView(R.layout.activity_incoming_call);
             intent=getIntent().getParcelableExtra("intent");
            // intent.getStringArrayExtra("intent");
-            if(manager ==null)
-            {
-                manager = SipManager.newInstance(this);
-            }
+
 
             try {
                 listener = new SipAudioCall.Listener() {
@@ -97,7 +93,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             imgreject.setOnClickListener(this);
             imghangup.setOnClickListener(this);
             //txtcallno.setText(inComingCall);
-            inComingCall = manager.takeAudioCall(intent,listener);
+            inComingCall = wt.manager.takeAudioCall(intent,listener);
             txtcallername.setText(inComingCall.getLocalProfile().getSipDomain());
         }
         catch (Exception e) {
@@ -115,7 +111,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void run() {
                 try {
-                    inComingCall = manager.takeAudioCall(intent,listener);
+                    inComingCall = wt.manager.takeAudioCall(intent,listener);
                     inComingCall.endCall();
                 } catch (SipException e) {
                     e.printStackTrace();
@@ -156,7 +152,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             txtStatus.setText("Connected");
             lytincoming.setVisibility(View.GONE);
             imghangup.setVisibility(View.VISIBLE);
-            inComingCall = manager.takeAudioCall(intent,listener);
+            inComingCall = wt.manager.takeAudioCall(intent,listener);
             inComingCall.answerCall(30);
             inComingCall.startAudio();
             inComingCall.setSpeakerMode(true);
@@ -175,7 +171,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
     void hangupcall()
     {
         try {
-            inComingCall = manager.takeAudioCall(intent,listener);
+            inComingCall = wt.manager.takeAudioCall(intent,listener);
             inComingCall.endCall();
         }catch (Exception e){
             e.printStackTrace();
@@ -185,7 +181,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
     void rejectcall()
     {
         try {
-            inComingCall = manager.takeAudioCall(intent,listener);
+            inComingCall = wt.manager.takeAudioCall(intent,listener);
             inComingCall.endCall();
         }catch (Exception e){
             e.printStackTrace();

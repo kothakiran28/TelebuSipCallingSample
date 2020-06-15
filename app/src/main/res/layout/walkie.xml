@@ -11,11 +11,38 @@
         android:id="@+id/walkie"
         android:layout_gravity="center_horizontal" />
 
-    <ToggleButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Push to Talk"
-        android:id="@+id/pushToTalk"
-        android:layout_gravity="center_horizontal"
-        android:checked="false" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:id="@+id/lytCall"
+        android:layout_margin="30dp"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight=".7"
+            android:layout_height="wrap_content"
+            android:id="@+id/edtMobileNumber"
+            android:inputType="number"
+            android:hint="Mobile Number"
+            android:maxLength="10"
+            />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight=".3"
+            android:id="@+id/btnCall"
+            android:text="Call"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+
+
+
+
+
+
 </LinearLayout>
