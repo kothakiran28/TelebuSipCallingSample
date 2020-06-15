@@ -72,6 +72,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
                     @Override
                     public void onCallEnded(SipAudioCall call) {
                         txtStatus.setText("Ended");
+                        stopService(new Intent(IncomingCallActivity.this,RingtonePlayingService.class));
                         finish();
                     }
                     };

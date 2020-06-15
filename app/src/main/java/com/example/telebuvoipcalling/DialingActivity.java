@@ -121,6 +121,7 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
                         e.printStackTrace();
                     }
                 }
+                stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
                 finish();
                 break;
         }
