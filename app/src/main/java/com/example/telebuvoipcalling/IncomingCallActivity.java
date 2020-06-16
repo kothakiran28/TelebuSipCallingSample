@@ -27,7 +27,7 @@ import android.widget.Toast;
 public class IncomingCallActivity extends AppCompatActivity implements View.OnClickListener {
     Button btn_rej,btn_ans;
     TextView txtcallername,txtcallno,txtStatus;
-    ImageView imghangup,imgaccept,imgreject;
+    ImageView imghangup,imgaccept,imgreject,imgspeaker,imgmute;
     SipAudioCall inComingCall = null;
     SipAudioCall.Listener listener;
     Intent intent;
@@ -92,6 +92,10 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             imgaccept.setOnClickListener(this);
             imgreject.setOnClickListener(this);
             imghangup.setOnClickListener(this);
+            imgspeaker = findViewById(R.id.imgspeaker);
+            imgmute = findViewById(R.id.imgmute);
+            imgspeaker.setOnClickListener(onSpeakerClickListener);
+            imgmute.setOnClickListener(onMuteClickListener);
             //txtcallno.setText(inComingCall);
             inComingCall = wt.manager.takeAudioCall(intent,listener);
             txtcallername.setText(inComingCall.getLocalProfile().getSipDomain());
@@ -104,6 +108,36 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
 
 
     }
+
+    View.OnClickListener onSpeakerClickListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v.isSelected()){
+                imgspeaker.setSelected(false);
+                imgspeaker.setImageResource(R.drawable.ic_speaker);
+                inComingCall.setSpeakerMode(false);
+            }else {
+                imgspeaker.setSelected(true);
+                imgspeaker.setImageResource(R.drawable.ic_speakeron);
+                inComingCall.setSpeakerMode(true);
+            }
+        }
+    };
+
+    View.OnClickListener onMuteClickListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v.isSelected()){
+                imgmute.setSelected(false);
+                imgmute.setImageResource(R.drawable.ic_mute);
+                inComingCall.toggleMute();
+            }else {
+                imgmute.setSelected(true);
+                imgmute.setImageResource(R.drawable.ic_unmute);
+                inComingCall.toggleMute();
+            }
+        }
+    };
 
     void setRingingRunnable(){
         ringingHandler=new Handler();
@@ -152,10 +186,12 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             txtStatus.setText("Connected");
             lytincoming.setVisibility(View.GONE);
             imghangup.setVisibility(View.VISIBLE);
+            imgspeaker.setVisibility(View.VISIBLE);
+            imgmute.setVisibility(View.VISIBLE);
             inComingCall = wt.manager.takeAudioCall(intent,listener);
             inComingCall.answerCall(30);
             inComingCall.startAudio();
-            inComingCall.setSpeakerMode(true);
+            inComingCall.setSpeakerMode(false);
             if(inComingCall.isMuted())
             {
                 // SIP audioCall incoming call

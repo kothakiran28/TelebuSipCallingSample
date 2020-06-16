@@ -26,7 +26,7 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
     public SipManager manager = null;
     public SipAudioCall call = null;
     public SipProfile me = null;
-    ImageView imghangup;
+    ImageView imghangup,imgspeaker,imgmute;
     SipAudioCall.Listener listener;
     Handler ringingHandler;
     Runnable ringingRunnable;
@@ -37,11 +37,7 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_dialing);
         Intent intent = getIntent();
         sipAddress = intent.getStringExtra("sipAddress");
-        txtcallername = findViewById(R.id.txtcallername);
-        txtStatus = findViewById(R.id.txtStatus);
-        txtcallno = findViewById(R.id.txtcallno);
-        imghangup = findViewById(R.id.imghangup);
-        imghangup.setOnClickListener(this);
+        setView();
         if (manager == null) {
             manager = SipManager.newInstance(this);
         }
@@ -54,13 +50,26 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
                 @Override
                 public void onCallEstablished(SipAudioCall call) {
                     call.startAudio();
-                    call.setSpeakerMode(true);
                     //call.toggleMute();
+                    call.setSpeakerMode(false);
                     txtStatus.setText("connected");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            imgspeaker.setVisibility(View.VISIBLE);
+                            imgmute.setVisibility(View.VISIBLE);
+                        }
+                    });
                     stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
                 }
 
-                @Override
+                  @Override
+                  public void onCallBusy(SipAudioCall call) {
+                      stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
+                      finish();
+                  }
+
+                  @Override
                 public void onCallEnded(SipAudioCall call) {
                     txtStatus.setText("Ended");
                     stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
@@ -97,6 +106,19 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
 
         }
     }
+    void setView()
+    {
+        txtcallername = findViewById(R.id.txtcallername);
+        txtStatus = findViewById(R.id.txtStatus);
+        txtcallno = findViewById(R.id.txtcallno);
+        imghangup = findViewById(R.id.imghangup);
+        imghangup.setOnClickListener(this);
+        imgspeaker = findViewById(R.id.imgspeaker);
+        imgspeaker.setOnClickListener(onSpeakerClickListener);
+        imgmute = findViewById(R.id.imgmute);
+        imgmute.setOnClickListener(onMuteClickListener);
+
+    }
     public void updateStatus() {
         String useName = call.getPeerProfile().getDisplayName();
         if(useName == null)
@@ -126,6 +148,37 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
                 break;
         }
     }
+
+
+    View.OnClickListener onSpeakerClickListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v.isSelected()){
+                imgspeaker.setSelected(false);
+                imgspeaker.setImageResource(R.drawable.ic_speaker);
+                call.setSpeakerMode(false);
+            }else {
+                imgspeaker.setSelected(true);
+                imgspeaker.setImageResource(R.drawable.ic_speakeron);
+                call.setSpeakerMode(true);
+            }
+        }
+    };
+
+    View.OnClickListener onMuteClickListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v.isSelected()){
+                imgmute.setSelected(false);
+                imgmute.setImageResource(R.drawable.ic_mute);
+                call.toggleMute();
+            }else {
+                imgmute.setSelected(true);
+                imgmute.setImageResource(R.drawable.ic_unmute);
+                call.toggleMute();
+            }
+        }
+    };
 
     void setRingingRunnable(){
         ringingHandler=new Handler();

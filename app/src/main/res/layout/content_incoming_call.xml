@@ -73,7 +73,6 @@
 
     </LinearLayout>
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="horizontal"
@@ -81,13 +80,29 @@
         android:layout_marginBottom="50dp"
         android:gravity="center_vertical|center_horizontal"
         android:layout_height="wrap_content">
-
+        <ImageView
+            android:id="@+id/imgmute"
+            android:layout_width="60dp"
+            android:visibility="gone"
+            android:layout_height="60dp"
+            android:layout_weight=".36"
+            android:src="@drawable/ic_mute"/>
+        <ImageView
+            android:id="@+id/imghangup"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:visibility="gone"
+            android:layout_weight=".30"
+            android:src="@drawable/ic_hangup"/>
         <ImageView
             android:layout_width="60dp"
-            android:id="@+id/imghangup"
+            android:layout_height="60dp"
             android:visibility="gone"
-            android:src="@drawable/ic_hangup"
-            android:layout_height="60dp" />
+            android:id="@+id/imgspeaker"
+            android:layout_weight=".27"
+            android:src="@drawable/ic_speaker"/>
+
+
     </LinearLayout>
 
 
