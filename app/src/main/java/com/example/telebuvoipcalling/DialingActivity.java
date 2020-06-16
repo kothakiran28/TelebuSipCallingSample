@@ -2,6 +2,7 @@ package com.example.telebuvoipcalling;
 
 import android.content.Intent;
 import android.net.sip.SipAudioCall;
+import android.net.sip.SipErrorCode;
 import android.net.sip.SipException;
 import android.net.sip.SipManager;
 import android.net.sip.SipProfile;
@@ -89,7 +90,34 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     });
                 }
-            };
+
+                  @Override
+                  public void onError(SipAudioCall call, int errorCode, final String errorMessage) {
+                      super.onError(call, errorCode, errorMessage);
+                      if (ringingHandler!=null&&ringingRunnable!=null) {
+                          ringingHandler.removeCallbacks(ringingRunnable);
+                      }
+                      runOnUiThread(new Runnable() {
+                          @Override
+                          public void run() {
+                            Toast.makeText(getApplicationContext(),errorMessage,Toast.LENGTH_LONG).show();
+                          }
+                      });
+                      stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
+                      finish();
+                      Log.e("onError",errorMessage+","+errorCode);
+                  }
+
+                  @Override
+                  public void onRingingBack(SipAudioCall call) {
+                      super.onRingingBack(call);  runOnUiThread(new Runnable() {
+                          @Override
+                          public void run() {
+                              txtStatus.setText("Ringing");
+                          }
+                      });
+                  }
+              };
            // txtcallername.setText(sipAddress);
             call = Registeration.manager.makeAudioCall(Registeration.me.getUriString(), sipAddress, listener, 30);
             try {
