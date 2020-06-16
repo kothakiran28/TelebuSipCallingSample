@@ -52,15 +52,18 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
                     call.startAudio();
                     //call.toggleMute();
                     call.setSpeakerMode(false);
-                    txtStatus.setText("connected");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            txtStatus.setText("connected");
+                            if (ringingHandler!=null&&ringingRunnable!=null) {
+                                ringingHandler.removeCallbacks(ringingRunnable);
+                            }
                             imgspeaker.setVisibility(View.VISIBLE);
                             imgmute.setVisibility(View.VISIBLE);
+                            stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
                         }
                     });
-                    stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
                 }
 
                   @Override
@@ -71,12 +74,20 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
 
                   @Override
                 public void onCallEnded(SipAudioCall call) {
-                    txtStatus.setText("Ended");
-                    stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
-                    finish();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (ringingHandler!=null&&ringingRunnable!=null) {
+                                ringingHandler.removeCallbacks(ringingRunnable);
+                            }
+                            txtStatus.setText("Ended");
+                            stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
+                            finish();
+                        }
+                    });
                 }
             };
-            txtcallername.setText(sipAddress);
+           // txtcallername.setText(sipAddress);
             call = Registeration.manager.makeAudioCall(Registeration.me.getUriString(), sipAddress, listener, 30);
             try {
                 startService(new Intent(DialingActivity.this, RingtonePlayingService.class).putExtra("isDialer", true));
@@ -125,7 +136,7 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
         {
             useName = call.getPeerProfile().getUserName();
         }
-        txtcallername.setText(useName + "@" + call.getPeerProfile().getSipDomain());
+        txtcallername.setText(useName);
 
     }
 
@@ -134,17 +145,24 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
         switch (v.getId())
         {
             case R.id.imghangup:
-                if (call!=null)
-                {
-                    try {
-                        call.endCall();
-                        finish();
-                    } catch (SipException e) {
-                        e.printStackTrace();
+                try {
+                    if (ringingHandler!=null&&ringingRunnable!=null) {
+                        ringingHandler.removeCallbacks(ringingRunnable);
                     }
+                    if (call!=null)
+                    {
+                        try {
+                            call.endCall();
+                            finish();
+                        } catch (SipException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
+                    finish();
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-                stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
-                finish();
                 break;
         }
     }

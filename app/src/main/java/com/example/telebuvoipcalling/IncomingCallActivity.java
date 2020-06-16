@@ -48,16 +48,22 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             intent=getIntent().getParcelableExtra("intent");
            // intent.getStringArrayExtra("intent");
 
-
+            startService(new Intent(IncomingCallActivity.this, RingtonePlayingService.class).putExtra("isDialer", true));
+            setRingingRunnable();
+            txtcallno.setText("Ringing");
             try {
                 listener = new SipAudioCall.Listener() {
                     @Override
                     public void onRinging(SipAudioCall call, SipProfile caller) {
                         try {
-                            startService(new Intent(IncomingCallActivity.this, RingtonePlayingService.class).putExtra("isDialer", true));
-                            setRingingRunnable();
-                            txtcallno.setText("Ringing");
-
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startService(new Intent(IncomingCallActivity.this, RingtonePlayingService.class).putExtra("isDialer", true));
+                                    setRingingRunnable();
+                                    txtcallno.setText("Ringing");
+                                }
+                            });
                             // call.answerCall(30);
                             // 30 is timeout
                         } catch (Exception e) {
@@ -65,11 +71,28 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
                         }
                     }
 
+                   @Override
+                    public void onCalling(SipAudioCall call) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                startService(new Intent(IncomingCallActivity.this, RingtonePlayingService.class).putExtra("isDialer", true));
+                                setRingingRunnable();
+                                txtcallno.setText("Ringing");
+                            }
+                        });
+                    }
+
                     @Override
                     public void onCallEnded(SipAudioCall call) {
-                        txtStatus.setText("Ended");
-                        stopService(new Intent(IncomingCallActivity.this,RingtonePlayingService.class));
-                        finish();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txtStatus.setText("Ended");
+                                stopService(new Intent(IncomingCallActivity.this,RingtonePlayingService.class));
+                                finish();
+                            }
+                        });
                     }
                     };
                 //wt.updateStatus(inComingCall);
@@ -98,7 +121,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             imgmute.setOnClickListener(onMuteClickListener);
             //txtcallno.setText(inComingCall);
             inComingCall = wt.manager.takeAudioCall(intent,listener);
-            txtcallername.setText(inComingCall.getLocalProfile().getSipDomain());
+            txtcallername.setText(inComingCall.getPeerProfile().getUserName());
         }
         catch (Exception e) {
             Log.d("Exception", e.toString());
@@ -183,6 +206,10 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
     {
         try {
            // txtcallername.setText(intent.);
+            if (ringingHandler!=null&&ringingRunnable!=null)
+            {
+                ringingHandler.removeCallbacks(ringingRunnable);
+            }
             txtStatus.setText("Connected");
             lytincoming.setVisibility(View.GONE);
             imghangup.setVisibility(View.VISIBLE);
@@ -207,6 +234,9 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
     void hangupcall()
     {
         try {
+            if (ringingHandler!=null&&ringingRunnable!=null) {
+                ringingHandler.removeCallbacks(ringingRunnable);
+            }
             inComingCall = wt.manager.takeAudioCall(intent,listener);
             inComingCall.endCall();
         }catch (Exception e){
@@ -217,6 +247,9 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
     void rejectcall()
     {
         try {
+            if (ringingHandler!=null&&ringingRunnable!=null) {
+                ringingHandler.removeCallbacks(ringingRunnable);
+            }
             inComingCall = wt.manager.takeAudioCall(intent,listener);
             inComingCall.endCall();
         }catch (Exception e){
