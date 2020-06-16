@@ -3,18 +3,9 @@ package com.example.telebuvoipcalling;
 import android.content.Intent;
 import android.net.sip.SipAudioCall;
 import android.net.sip.SipException;
-import android.net.sip.SipManager;
 import android.net.sip.SipProfile;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.os.Handler;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class IncomingCallActivity extends AppCompatActivity implements View.OnClickListener {
     Button btn_rej,btn_ans;
@@ -35,6 +28,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
     Handler ringingHandler;
     Runnable ringingRunnable;
     LinearLayout lytincoming;
+    TelebuManager telebuManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
@@ -44,11 +38,13 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             int flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
             getWindow().addFlags(flags);
             super.onCreate(savedInstanceState);
+            telebuManager=new TelebuManager(this);
+            telebuManager.enableProximitySensing(true);
             setContentView(R.layout.activity_incoming_call);
             intent=getIntent().getParcelableExtra("intent");
            // intent.getStringArrayExtra("intent");
-
-            startService(new Intent(IncomingCallActivity.this, RingtonePlayingService.class).putExtra("isDialer", true));
+            setView();
+            startService(new Intent(IncomingCallActivity.this, RingtonePlayingService.class).putExtra("isDialer", false));
             setRingingRunnable();
             txtcallno.setText("Ringing");
             try {
@@ -59,7 +55,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    startService(new Intent(IncomingCallActivity.this, RingtonePlayingService.class).putExtra("isDialer", true));
+                                    startService(new Intent(IncomingCallActivity.this, RingtonePlayingService.class).putExtra("isDialer", false));
                                     setRingingRunnable();
                                     txtcallno.setText("Ringing");
                                 }
@@ -76,7 +72,7 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                startService(new Intent(IncomingCallActivity.this, RingtonePlayingService.class).putExtra("isDialer", true));
+                                startService(new Intent(IncomingCallActivity.this, RingtonePlayingService.class).putExtra("isDialer", false));
                                 setRingingRunnable();
                                 txtcallno.setText("Ringing");
                             }
@@ -105,20 +101,6 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
                 }
                 //e.printStackTrace();
             }
-            txtcallno = findViewById(R.id.txtcallno);
-            txtcallername = findViewById(R.id.txtcallername);
-            txtStatus = findViewById(R.id.txtStatus);
-            imghangup =  findViewById(R.id.imghangup);
-            imgaccept =  findViewById(R.id.imgaccept);
-            lytincoming = findViewById(R.id.lytincoming);
-            imgreject =  findViewById(R.id.imgreject);
-            imgaccept.setOnClickListener(this);
-            imgreject.setOnClickListener(this);
-            imghangup.setOnClickListener(this);
-            imgspeaker = findViewById(R.id.imgspeaker);
-            imgmute = findViewById(R.id.imgmute);
-            imgspeaker.setOnClickListener(onSpeakerClickListener);
-            imgmute.setOnClickListener(onMuteClickListener);
             //txtcallno.setText(inComingCall);
             inComingCall = wt.manager.takeAudioCall(intent,listener);
             txtcallername.setText(inComingCall.getPeerProfile().getUserName());
@@ -128,8 +110,23 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
 
-
+    void setView(){
+        txtcallno = findViewById(R.id.txtcallno);
+        txtcallername = findViewById(R.id.txtcallername);
+        txtStatus = findViewById(R.id.txtStatus);
+        imghangup =  findViewById(R.id.imghangup);
+        imgaccept =  findViewById(R.id.imgaccept);
+        lytincoming = findViewById(R.id.lytincoming);
+        imgreject =  findViewById(R.id.imgreject);
+        imgaccept.setOnClickListener(this);
+        imgreject.setOnClickListener(this);
+        imghangup.setOnClickListener(this);
+        imgspeaker = findViewById(R.id.imgspeaker);
+        imgmute = findViewById(R.id.imgmute);
+        imgspeaker.setOnClickListener(onSpeakerClickListener);
+        imgmute.setOnClickListener(onMuteClickListener);
     }
 
     View.OnClickListener onSpeakerClickListener=new View.OnClickListener() {
@@ -260,6 +257,11 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onBackPressed() {
 
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(telebuManager!=null)telebuManager.enableProximitySensing(false);
     }
 }
 

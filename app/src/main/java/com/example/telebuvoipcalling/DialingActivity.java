@@ -30,12 +30,15 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
     SipAudioCall.Listener listener;
     Handler ringingHandler;
     Runnable ringingRunnable;
+    TelebuManager telebuManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dialing);
         Intent intent = getIntent();
+        telebuManager=new TelebuManager(this);
+        telebuManager.enableProximitySensing(true);
         sipAddress = intent.getStringExtra("sipAddress");
         setView();
         if (manager == null) {
@@ -219,5 +222,11 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onBackPressed() {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(telebuManager!=null)telebuManager.enableProximitySensing(false);
     }
 }
