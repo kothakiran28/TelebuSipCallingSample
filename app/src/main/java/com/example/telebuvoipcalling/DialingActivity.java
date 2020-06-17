@@ -198,6 +198,11 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
                     e.printStackTrace();
                 }
                 break;
+            case R.id.imgadd:
+                DailPadBottomSheet dailPadBottomSheet=new DailPadBottomSheet(this);
+                dailPadBottomSheet.setAddMemberListener(this);
+                dailPadBottomSheet.show(this.getSupportFragmentManager(), dailPadBottomSheet.getTag());
+                break;
         }
     }
 

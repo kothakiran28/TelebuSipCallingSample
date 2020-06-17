@@ -34,21 +34,26 @@
         <activity
             android:name=".DialingActivity"
             android:label="@string/title_activity_dialing"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".IncomingCallActivity"
             android:label="@string/title_activity_incoming_call"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SplashActivity">
+        <activity android:name=".SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Registeration" />
+        <activity android:name=".Registeration"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".SipSettings"
+            android:screenOrientation="portrait"
             android:label="set_preferences" />
 
         <receiver
