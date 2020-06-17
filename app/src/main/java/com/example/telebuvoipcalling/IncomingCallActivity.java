@@ -17,10 +17,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class IncomingCallActivity extends AppCompatActivity implements View.OnClickListener {
+public class IncomingCallActivity extends AppCompatActivity implements View.OnClickListener, DailPadBottomSheet.AddMemberListener{
     Button btn_rej,btn_ans;
     TextView txtcallername,txtcallno,txtStatus;
-    ImageView imghangup,imgaccept,imgreject,imgspeaker,imgmute;
+    ImageView imghangup,imgaccept,imgreject,imgspeaker,imgmute,imgadd;
     SipAudioCall inComingCall = null;
     SipAudioCall.Listener listener;
     Intent intent;
@@ -127,6 +127,9 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
         imgmute = findViewById(R.id.imgmute);
         imgspeaker.setOnClickListener(onSpeakerClickListener);
         imgmute.setOnClickListener(onMuteClickListener);
+        imgadd = findViewById(R.id.imgadd);
+        imgadd.setOnClickListener(this);
+
     }
 
     View.OnClickListener onSpeakerClickListener=new View.OnClickListener() {
@@ -196,6 +199,11 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
                 hangupcall();
                 finish();
                 break;
+            case R.id.imgadd:
+                DailPadBottomSheet dailPadBottomSheet=new DailPadBottomSheet(this);
+                dailPadBottomSheet.setAddMemberListener(this);
+                dailPadBottomSheet.show(this.getSupportFragmentManager(), dailPadBottomSheet.getTag());
+                break;
         }
     }
 
@@ -207,11 +215,13 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
             {
                 ringingHandler.removeCallbacks(ringingRunnable);
             }
+            txtcallno.setVisibility(View.GONE);
             txtStatus.setText("Connected");
             lytincoming.setVisibility(View.GONE);
             imghangup.setVisibility(View.VISIBLE);
             imgspeaker.setVisibility(View.VISIBLE);
             imgmute.setVisibility(View.VISIBLE);
+            imgadd.setVisibility(View.VISIBLE);
             inComingCall = wt.manager.takeAudioCall(intent,listener);
             inComingCall.answerCall(30);
             inComingCall.startAudio();
@@ -262,6 +272,12 @@ public class IncomingCallActivity extends AppCompatActivity implements View.OnCl
     protected void onDestroy() {
         super.onDestroy();
         if(telebuManager!=null)telebuManager.enableProximitySensing(false);
+    }
+
+    @Override
+    public void newNumberAdded(String mobileNumber) {
+         if (inComingCall!=null)
+         inComingCall.sendDtmf(Integer.parseInt(mobileNumber));
     }
 }
 

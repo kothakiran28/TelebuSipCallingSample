@@ -1,0 +1,414 @@
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/colorWhite"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <RelativeLayout
+        android:id="@+id/llTitleBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="@color/colorWhite"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/ibBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:padding="15dp"
+            android:src="@drawable/ic_back_arrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="40dp"
+            android:text="Dial Number"
+            android:textColor="#11243d"
+            android:textSize="18dp" />
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dip"
+            android:layout_alignParentBottom="true"
+            android:background="#E5E5E5"
+            />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/colorWhite"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:id="@+id/topPanel"
+        android:weightSum="1"
+        android:layout_above="@+id/bottomPanel"
+        android:paddingLeft="10dip"
+        android:layout_marginBottom="20dp"
+        android:paddingRight="10dip">
+
+
+        <EditText
+            android:id="@+id/phone_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:gravity="center"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:maxLength="16"
+            android:background="@null"
+            android:focusableInTouchMode="false"
+            android:textSize="22dp"
+            android:textColor="#141313"
+            android:digits="0123456789"
+            />
+
+    </LinearLayout>
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        app:cardBackgroundColor="#f0f5ff"
+        android:background="#f0f5ff"
+        android:id="@+id/bottomPanel"
+        app:cardCornerRadius="15dp"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="50dp"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:weightSum="3" >
+            <LinearLayout
+                android:id="@+id/dialNum1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:tag="1" >
+                <TextView
+                    android:id="@+id/txtone"
+                    android:layout_width="0dp"
+                    android:padding="10dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textColor="#2f3f5a"
+                    android:textSize="32dp"
+
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/dialNum2"
+                android:layout_width="0dp"
+                android:clickable="true"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:tag="2" >
+
+                <TextView
+                    android:id="@+id/txttwo"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="2"
+                    android:textColor="#2f3f5a"
+                    android:textSize="32dp"
+                    android:textStyle="bold"
+
+             />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/dialNum3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+
+                android:orientation="horizontal"
+                android:tag="3" >
+
+                <TextView
+                    android:id="@+id/txtthree"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:textColor="#2f3f5a"
+                    android:text="3"
+                    android:textSize="32dp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:weightSum="3" >
+            <LinearLayout
+                android:id="@+id/dialNum4"
+                android:layout_width="0dp"
+                android:clickable="true"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:tag="4" >
+                <TextView
+                    android:id="@+id/txtfour"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:textSize="32dp"
+                    android:gravity="center"
+                    android:text="4"
+                    android:textColor="#2f3f5a"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/dialNum5"
+                android:layout_width="0dp"
+                android:clickable="true"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:tag="5" >
+                <TextView
+                    android:id="@+id/txtfive"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:text="5"
+                    android:textColor="#2f3f5a"
+                    android:textSize="32dp"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/dialNum6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:tag="6" >
+
+                <TextView
+                    android:id="@+id/txtsix"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:text="6"
+                    android:textSize="32dp"
+                    android:textColor="#2f3f5a"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+
+            android:weightSum="3" >
+
+            <LinearLayout
+                android:id="@+id/dialNum7"
+                android:layout_width="0dp"
+                android:clickable="true"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:tag="7" >
+
+                <TextView
+                    android:id="@+id/txtseven"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="7"
+                    android:textSize="32dp"
+                    android:textColor="#2f3f5a"
+                    android:padding="10dp"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dialNum8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:tag="8" >
+
+                <TextView
+                    android:id="@+id/txteight"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:textColor="#2f3f5a"
+                    android:text="8"
+                    android:textSize="32dp"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dialNum9"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:layout_weight="1"
+                android:tag="9" >
+                <TextView
+                    android:id="@+id/txtninne"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="9"
+                    android:textColor="#2f3f5a"
+                    android:textSize="32dp"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:weightSum="3" >
+
+            <LinearLayout
+                android:id="@+id/dialx"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:tag="*">
+                <TextView
+                    android:id="@+id/txtStar"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:text="*"
+                    android:textColor="#2f3f5a"
+                    android:textSize="45dp"
+                    android:textStyle="bold"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dialNum0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:tag="0" >
+
+                <TextView
+                    android:id="@+id/txtzero"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="#2f3f5a"
+                    android:textSize="32dp"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dialj"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:tag="#" >
+
+                <TextView
+                    android:id="@+id/txtHash"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:text="#"
+                    android:textColor="#2f3f5a"
+                    android:textSize="32dp"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_gravity="right"
+                android:layout_marginRight="20dp"
+                android:id="@+id/delete"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/ic_dial_cancel"
+                android:layout_height="80dp"/>
+
+    </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>
+

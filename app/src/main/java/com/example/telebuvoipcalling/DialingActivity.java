@@ -21,13 +21,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DialingActivity extends AppCompatActivity implements View.OnClickListener {
+public class DialingActivity extends AppCompatActivity implements View.OnClickListener, DailPadBottomSheet.AddMemberListener {
     public String sipAddress = null;
     TextView txtcallername,txtStatus,txtcallno;
     public SipManager manager = null;
     public SipAudioCall call = null;
     public SipProfile me = null;
-    ImageView imghangup,imgspeaker,imgmute;
+    ImageView imghangup,imgspeaker,imgmute,imgadd;
     SipAudioCall.Listener listener;
     Handler ringingHandler;
     Runnable ringingRunnable;
@@ -65,6 +65,7 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
                             }
                             imgspeaker.setVisibility(View.VISIBLE);
                             imgmute.setVisibility(View.VISIBLE);
+                            imgadd.setVisibility(View.VISIBLE);
                             stopService(new Intent(DialingActivity.this,RingtonePlayingService.class));
                         }
                     });
@@ -159,6 +160,8 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
         imgspeaker.setOnClickListener(onSpeakerClickListener);
         imgmute = findViewById(R.id.imgmute);
         imgmute.setOnClickListener(onMuteClickListener);
+        imgadd = findViewById(R.id.imgadd);
+        imgadd.setOnClickListener(this);
 
     }
     public void updateStatus() {
@@ -206,6 +209,8 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
                 imgspeaker.setSelected(false);
                 imgspeaker.setImageResource(R.drawable.ic_speaker);
                 call.setSpeakerMode(false);
+
+
             }else {
                 imgspeaker.setSelected(true);
                 imgspeaker.setImageResource(R.drawable.ic_speakeron);
@@ -256,5 +261,11 @@ public class DialingActivity extends AppCompatActivity implements View.OnClickLi
     protected void onDestroy() {
         super.onDestroy();
         if(telebuManager!=null)telebuManager.enableProximitySensing(false);
+    }
+
+    @Override
+    public void newNumberAdded(String mobileNumber) {
+        if (call!=null)
+            call.sendDtmf(Integer.parseInt(mobileNumber));
     }
 }
